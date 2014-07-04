@@ -1,5 +1,5 @@
 /*
-    TimelineJS - ver. 2014-07-04-01-16-20 - 2014-07-04
+    TimelineJS - ver. 2014-07-04-18-27-52 - 2014-07-04
     Copyright (c) 2012-2013 Northwestern University
     a project of the Northwestern University Knight Lab, originally created by Zach Wise
     https://github.com/NUKnightLab/TimelineJS
@@ -9342,13 +9342,26 @@ if (typeof VMM.Timeline !== 'undefined' && typeof VMM.Timeline.DataObj == 'undef
 		},
 		
 		parseHTML: function (d) {
+
+                        function dateTimeFromElem(elem) {
+				var result = VMM.Lib.attr(elem, "datetime");
+				if (!result) {
+					return VMM.Lib.html(elem);
+				}
+				else {
+					var htmlDate = new Date(result);
+					
+					return htmlDate.getFullYear() + "," + (htmlDate.getMonth() + 1) + "," + htmlDate.getDate();                                
+	                        }
+                        }
+
 			trace("parseHTML");
 			var _data_obj = VMM.Timeline.DataObj.data_template_obj;
 			
 			/*	Timeline start slide
 			================================================== */
-      var initialPage = VMM.Lib.find(d, "section");
-      if (initialPage != 0) {
+			var initialPage = VMM.Lib.find(d, "section");
+			if (initialPage != 0) {
 				_data_obj.timeline.headline = VMM.Lib.html(VMM.Lib.find(initialPage[0], "h2"));
 				_data_obj.timeline.text = VMM.Lib.html(VMM.Lib.find(initialPage[0], "article"));
 
@@ -9357,7 +9370,7 @@ if (typeof VMM.Timeline !== 'undefined' && typeof VMM.Timeline.DataObj == 'undef
 				if (VMM.Lib.find(initialPage[0], "figure img").length != 0) {
 					found_main_media = true;
 					_data_obj.timeline.asset.media = VMM.Lib.attr(VMM.Lib.find(initialPage[0], "figure img"), "src");
-          _data_obj.timeline.asset.thumbnail = _data_obj.timeline.asset.media;
+					_data_obj.timeline.asset.thumbnail = _data_obj.timeline.asset.media;
 				} else if (VMM.Lib.find(initialPage[0], "figure a").length != 0) {
 					found_main_media = true;
 					_data_obj.timeline.asset.media = VMM.Lib.attr(VMM.Lib.find(initialPage[0], "figure a"), "href");
@@ -9366,7 +9379,10 @@ if (typeof VMM.Timeline !== 'undefined' && typeof VMM.Timeline.DataObj == 'undef
 				}
 
 				if (found_main_media) {
-					_data_obj.timeline.asset.thumbnail = VMM.Lib.attr(VMM.Lib.find(initialPage[0], "figure"), "data-thumbnail");
+					var thumbnail = VMM.Lib.attr(VMM.Lib.find(initialPage[0], "figure"), "data-thumbnail");
+					if (thumbnail) {
+						_data_obj.timeline.asset.thumbnail = thumbnail;
+					}
 					if (VMM.Lib.find(initialPage[0], "cite").length != 0) {
 						_data_obj.timeline.asset.credit = VMM.Lib.html(VMM.Lib.find(initialPage[0], "cite"));
 					}
@@ -9379,26 +9395,26 @@ if (typeof VMM.Timeline !== 'undefined' && typeof VMM.Timeline.DataObj == 'undef
 			/*	Timeline Era Slides
 			================================================== */
 			VMM.Lib.each( VMM.Lib.find(d, "li.era"), function(i, elem) {
-        var times = VMM.Lib.find(this, "time");
+				var times = VMM.Lib.find(this, "time");
 				if (times.count != 2) {
-          var _era = {
-            "startDate":"",
-            "endDate":"",
-            "headline":"",
-            "text":"",
-            "tag":""
-          }
+					var _era = {
+						"startDate":"",
+						"endDate":"",
+						"headline":"",
+						"text":"",
+						"tag":""
+					}
+			
+				        _era.startDate = dateTimeFromElem(times[0]);
+	          			_era.endDate = dateTimeFromElem(times[1]);
+					_era.headline = VMM.Lib.html(VMM.Lib.find(this, "h3"));
+					_era.text = VMM.Lib.html(VMM.Lib.find(this, "article"));
+					_era.tag = VMM.Lib.attr(this, "data-tag");
 					
-          _era.startDate = VMM.Lib.attr(times[0], "datetime");
-          _era.endDate = VMM.Lib.attr(times[1], "datetime");
-          _era.headline = VMM.Lib.html(VMM.Lib.find(this, "h3"));
-          _era.text = VMM.Lib.html(VMM.Lib.find(this, "article"));
-          _era.tag = VMM.Lib.attr(this, "data-tag");
-					
-          trace(_era);
+					trace(_era);
 					_data_obj.timeline.era.push(_era);
-        }
-      } );
+				}
+			} );
 
 			/*	Timeline Date Slides
 			================================================== */
@@ -9407,24 +9423,23 @@ if (typeof VMM.Timeline !== 'undefined' && typeof VMM.Timeline.DataObj == 'undef
 				var _date = {
 					"type":"default",
 					"startDate":"",
-          "headline":"",
-          "text":"",
-          "asset":
-          {
-            "media":"",
-            "credit":"",
-            "caption":""
-          },
-          "tags":"Optional"
+					"headline":"",
+					"text":"",
+					"asset": {
+						"media":"",
+						"credit":"",
+						"caption":""
+					},
+					"tags":"Optional"
 				};
 				
-        var times = VMM.Lib.find(this, "time");
+				var times = VMM.Lib.find(this, "time");
 				if (times != 0) {
 
-					_date.startDate = VMM.Lib.attr(times[0], "datetime");
+					_date.startDate = dateTimeFromElem(times[0]);
 
 					if (times[1]) {
-						_date.endDate = VMM.Lib.attr(times[1], "datetime");
+						_date.endDate = dateTimeFromElem(times[1]);
 					}
 
 					_date.headline = VMM.Lib.html(VMM.Lib.find(this, "h3"));
@@ -9435,7 +9450,7 @@ if (typeof VMM.Timeline !== 'undefined' && typeof VMM.Timeline.DataObj == 'undef
 					if (VMM.Lib.find(this, "figure img").length != 0) {
 						found_media = true;
 						_date.asset.media = VMM.Lib.attr(VMM.Lib.find(this, "figure img"), "src");
-            _date.asset.thumbnail = _date.asset.media;
+						_date.asset.thumbnail = _date.asset.media;
 					} else if (VMM.Lib.find(this, "figure a").length != 0) {
 						found_media = true;
 						_date.asset.media = VMM.Lib.attr(VMM.Lib.find(this, "figure a"), "href");
@@ -9444,7 +9459,10 @@ if (typeof VMM.Timeline !== 'undefined' && typeof VMM.Timeline.DataObj == 'undef
 					}
 
 					if (found_media) {
-            _data_obj.timeline.asset.thumbnail = VMM.Lib.attr(VMM.Lib.find(this, "figure"), "data-thumbnail");
+						var thumbnail = VMM.Lib.attr(VMM.Lib.find(this, "figure"), "data-thumbnail");
+						if (thumbnail) {
+							_date.asset.thumbnail = thumbnail;
+						}
 						if (VMM.Lib.find(this, "cite").length != 0) {
 							_date.asset.credit = VMM.Lib.html(VMM.Lib.find(this, "cite"));
 						}
@@ -9459,6 +9477,8 @@ if (typeof VMM.Timeline !== 'undefined' && typeof VMM.Timeline.DataObj == 'undef
 				}
 				
 			});
+
+			VMM.Lib.remove(d);
 			
 			VMM.fireEvent(global, VMM.Timeline.Config.events.data_ready, _data_obj);
 			
@@ -10105,3 +10125,4 @@ if (typeof VMM.Timeline !== 'undefined' && typeof VMM.Timeline.DataObj == 'undef
 	};
 	
 }
+
