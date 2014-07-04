@@ -1280,12 +1280,12 @@
       "outputAbbreviatedPath" : "No Output Path",
       "fileType" : 16
     },
-    "\/source\/js\/VMM.TImeline.Min.js" : {
+    "\/source\/js\/VMM.Timeline.Min.js" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 0,
       "hidden" : 0,
       "outputPathIsSetByUser" : 1,
-      "inputAbbreviatedPath" : "\/source\/js\/VMM.TImeline.Min.js",
+      "inputAbbreviatedPath" : "\/source\/js\/VMM.Timeline.Min.js",
       "outputStyle" : 1,
       "syntaxCheckerStyle" : 0,
       "outputAbbreviatedPath" : "\/compiled\/js\/timeline-min.js",
