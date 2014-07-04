@@ -416,7 +416,7 @@ if(typeof VMM != 'undefined' && typeof VMM.Timeline == 'undefined') {
 				}
 			}
 			
-			if (type.of(config.source) == "string" || type.of(config.source) == "object") {
+			if (typeof(config.source) == "string" || typeof(config.source) == "object") {
 				VMM.Timeline.DataObj.getData(config.source);
 			} else {
 				VMM.fireEvent(global, config.events.messege, "No data source provided");
